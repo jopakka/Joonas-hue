@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.bGet) {
+            Log.d(TAG, "bGet pressed");
             if (!et.getText().toString().isEmpty()) {
                 String etUrl = et.getText().toString();
                 if (!et.getText().toString().contains("http://")) {

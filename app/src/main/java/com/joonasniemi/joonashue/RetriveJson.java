@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.util.JsonReader;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -58,9 +61,8 @@ public class RetriveJson extends AsyncTask<URL, Integer, String> {
                     buffer.append(line);
                     Log.d(TAG, "Buffer line: " + line);
                     try {
-                        JSONArray jsonArray = new JSONArray(line);
-                        JSONObject jsonObject = (JSONObject) new JSONTokener(jsonArray.toString()).nextValue();
-                        Log.d(TAG, "jsonTokener " + jsonObject);
+                        JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
+                        Log.d(TAG, "JsonObject: " + jsonObject);
                     } catch (Exception e){
                         Log.e(TAG, "Try jArray error");
                         int maxLogSize = 1000;

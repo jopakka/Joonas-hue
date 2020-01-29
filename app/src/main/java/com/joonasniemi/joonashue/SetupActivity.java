@@ -23,7 +23,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     private String username;
     private TextView tvIp;
     private TextView tvUser;
-
     private SharedPreferences pref;
 
     @Override
@@ -90,27 +89,29 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void setDevToBridge() {
-        try {
-            JSONObject dev = new JSONObject();
-            dev.put("devicetype", R.string.app_name + "#Admin");
-            String line = new HandleHttp("POST", dev).execute("http://" + bridgeIp + "/api").get();
-            Log.d(TAG, "Line: " + line);
-            JSONParser parser = new JSONParser();
-            JSONArray jArray = (JSONArray) parser.parse(line);
-            JSONObject jObj = (JSONObject) jArray.get(0);
-            JSONObject success = (JSONObject) jObj.get("success");
-            username = (String) success.get("username");
-            Log.d(TAG, "Dev username: " + username);
-        } catch (ExecutionException e) {
-            Log.e(TAG, "ExecutionException: " + e);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "InterruptedException: " + e);
-        } catch (Exception e){
-            Log.e(TAG, "Random error: " + e);
+        if(bridgeIp != null) {
+            try {
+                JSONObject dev = new JSONObject();
+                dev.put("devicetype", R.string.app_name + "#Admin");
+                String line = new HandleHttp("POST", dev).execute("http://" + bridgeIp + "/api").get();
+                Log.d(TAG, "Line: " + line);
+                JSONParser parser = new JSONParser();
+                JSONArray jArray = (JSONArray) parser.parse(line);
+                JSONObject jObj = (JSONObject) jArray.get(0);
+                JSONObject success = (JSONObject) jObj.get("success");
+                username = (String) success.get("username");
+                Log.d(TAG, "Dev username: " + username);
+            } catch (ExecutionException e) {
+                Log.e(TAG, "ExecutionException: " + e);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "InterruptedException: " + e);
+            } catch (Exception e) {
+                Log.e(TAG, "Random error: " + e);
+            }
         }
     }
 
     private void login(){
-        
+
     }
 }

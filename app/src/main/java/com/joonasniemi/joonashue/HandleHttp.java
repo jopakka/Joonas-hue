@@ -57,7 +57,12 @@ public class HandleHttp extends AsyncTask<String, Void, String> {
                 OutputStream out = new BufferedOutputStream(conn.getOutputStream());
                 out.write(jObj.toJSONString().getBytes());
                 out.flush();
-                Log.d(TAG, "Out: " + out);
+            } else if(method.equals("PUT")){
+                conn.setDoOutput(true);
+                conn.setRequestMethod(method);
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                out.write(jObj.toJSONString().getBytes());
+                out.close();
             } else {
                 conn.setRequestMethod(method);
             }

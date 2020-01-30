@@ -3,6 +3,7 @@ package com.joonasniemi.joonashue;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +18,8 @@ import org.json.simple.parser.ParseException;
 import java.util.concurrent.ExecutionException;
 
 public class SetupActivity extends AppCompatActivity implements View.OnClickListener {
-    private static String TAG = "myTag";
-    private static String upnp = "https://discovery.meethue.com/";
+    private static final String TAG = "myTag";
+    private static final String upnp = "https://discovery.meethue.com/";
     private String bridgeIp;
     private String username;
     private TextView tvIp;
@@ -57,16 +58,13 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bBridgeIp) {
-            Log.d(TAG, "bBridgeIp pressed");
             findBridgeIp();
             tvIp.setText(bridgeIp);
         } else if (v.getId() == R.id.bDev){
-            Log.d(TAG, "bDev pressed");
             setDevToBridge();
             tvUser.setText(username);
         } else if (v.getId() == R.id.bLogin){
-            Log.d(TAG, "bLogin pressed");
-            setDevToBridge();
+            login();
         }
     }
 
@@ -98,9 +96,15 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 JSONParser parser = new JSONParser();
                 JSONArray jArray = (JSONArray) parser.parse(line);
                 JSONObject jObj = (JSONObject) jArray.get(0);
-                JSONObject success = (JSONObject) jObj.get("success");
-                username = (String) success.get("username");
-                Log.d(TAG, "Dev username: " + username);
+                if (jObj.containsKey("success")) {
+                    JSONObject success = (JSONObject) jObj.get("success");
+                    username = (String) success.get("username");
+                    Log.d(TAG, "Dev username: " + username);
+                } else {
+                    JSONObject error = (JSONObject) jObj.get("error");
+                    String desc = (String) error.get("description");
+                    Log.d(TAG, "" + desc);
+                }
             } catch (ExecutionException e) {
                 Log.e(TAG, "ExecutionException: " + e);
             } catch (InterruptedException e) {
@@ -112,6 +116,9 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login(){
-
+        if(bridgeIp != null && username != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 }

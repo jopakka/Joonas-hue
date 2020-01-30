@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.concurrent.ExecutionException;
 
@@ -46,10 +48,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             json.put("on", true);
             String line = new HandleHttp("PUT", json).execute("http://" + bridgeIp + "/api/" +
                     username + "/lights/1/state").get();
+            JSONParser parser = new JSONParser();
+            JSONArray jArray = (JSONArray) parser.parse(line);
+            JSONObject jObj = (JSONObject) jArray.get(0);
+            if (jObj.containsKey("success")) {
+                Log.d(TAG, "Light 1 On");
+            } else {
+                Log.d(TAG, "Light 1 error");
+            }
         } catch (ExecutionException e) {
             Log.e(TAG, "ExecutionException: " + e);
         } catch (InterruptedException e) {
             Log.e(TAG, "InterruptedException: " + e);
+        } catch (Exception e) {
+            Log.e(TAG, "Random error: " + e);
         }
     }
 
@@ -59,10 +71,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             json.put("on", false);
             String line = new HandleHttp("PUT", json).execute("http://" + bridgeIp + "/api/" +
                     username + "/lights/1/state").get();
+            JSONParser parser = new JSONParser();
+            JSONArray jArray = (JSONArray) parser.parse(line);
+            JSONObject jObj = (JSONObject) jArray.get(0);
+            if (jObj.containsKey("success")) {
+                Log.d(TAG, "Light 1 Off");
+            } else {
+                Log.d(TAG, "Light 1 error");
+            }
         } catch (ExecutionException e) {
             Log.e(TAG, "ExecutionException: " + e);
         } catch (InterruptedException e) {
             Log.e(TAG, "InterruptedException: " + e);
+        } catch (Exception e) {
+            Log.e(TAG, "Random error: " + e);
         }
     }
 }

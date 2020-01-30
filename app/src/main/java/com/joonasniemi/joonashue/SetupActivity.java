@@ -43,7 +43,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         tvIp.setText(bridgeIp);
         tvUser.setText(username);
 
-
+        Log.d(TAG, "Username: " + username);
     }
 
     @Override
@@ -53,6 +53,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         editor.putString("username", username);
         editor.putString("bridgeIp", bridgeIp);
         editor.apply();
+        Json.getInstance().setUsername(username);
+        Json.getInstance().setBridgeIp(bridgeIp);
     }
 
     @Override
@@ -71,11 +73,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     private void findBridgeIp() {
         try {
             String line = new HandleHttp().execute(upnp).get();
-            Log.d(TAG, "Line: " + line);
             JSONParser parser = new JSONParser();
             JSONArray jArray = (JSONArray) parser.parse(line);
             JSONObject jObj = (JSONObject) jArray.get(0);
             bridgeIp = (String) jObj.get("internalipaddress");
+            Json.getInstance().setBridgeIp(bridgeIp);
             Log.d(TAG, "IP-Address: " + bridgeIp);
         } catch (ParseException e) {
             Log.e(TAG, "ParseException: " + e);
@@ -92,13 +94,13 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 JSONObject dev = new JSONObject();
                 dev.put("devicetype", R.string.app_name + "#Admin");
                 String line = new HandleHttp("POST", dev).execute("http://" + bridgeIp + "/api").get();
-                Log.d(TAG, "Line: " + line);
                 JSONParser parser = new JSONParser();
                 JSONArray jArray = (JSONArray) parser.parse(line);
                 JSONObject jObj = (JSONObject) jArray.get(0);
                 if (jObj.containsKey("success")) {
                     JSONObject success = (JSONObject) jObj.get("success");
                     username = (String) success.get("username");
+                    Json.getInstance().setUsername(username);
                     Log.d(TAG, "Dev username: " + username);
                 } else {
                     JSONObject error = (JSONObject) jObj.get("error");
@@ -117,6 +119,14 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     private void login(){
         if(bridgeIp != null && username != null) {
+            try {
+                String line = new HandleHttp().execute("Http://" + bridgeIp + "/api/" + username).get();
+                Json.getInstance().setJsonString(line);
+            } catch (ExecutionException e) {
+                Log.e(TAG, "ExecutionException: " + e);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "InterruptedException: " + e);
+            }
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
